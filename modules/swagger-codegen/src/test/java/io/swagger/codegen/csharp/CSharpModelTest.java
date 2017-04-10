@@ -127,10 +127,10 @@ public class CSharpModelTest {
 
         final CodegenProperty property1 = cm.vars.get(0);
         Assert.assertEquals(property1.baseName, "id");
-        Assert.assertEquals(property1.datatype, "long?");
+        Assert.assertEquals(property1.datatype, "long");
         Assert.assertEquals(property1.name, "Id");
         Assert.assertNull(property1.defaultValue);
-        Assert.assertEquals(property1.baseType, "long?");
+        Assert.assertEquals(property1.baseType, "long");
         Assert.assertTrue(property1.hasMore);
         Assert.assertTrue(property1.required);
         Assert.assertTrue(property1.isPrimitiveType);
@@ -152,7 +152,7 @@ public class CSharpModelTest {
         Assert.assertEquals(property3.datatype, "DateTime?");
         Assert.assertEquals(property3.name, "CreatedAt");
         Assert.assertNull(property3.defaultValue);
-        Assert.assertEquals(property3.baseType, "DateTime?");
+        Assert.assertEquals(property3.baseType, "DateTime");
         Assert.assertFalse(property3.hasMore);
         Assert.assertFalse(property3.required);
         Assert.assertTrue(property3.isNotContainer);
@@ -176,10 +176,10 @@ public class CSharpModelTest {
 
         final CodegenProperty property1 = cm.vars.get(0);
         Assert.assertEquals(property1.baseName, "id");
-        Assert.assertEquals(property1.datatype, "long?");
+        Assert.assertEquals(property1.datatype, "long");
         Assert.assertEquals(property1.name, "Id");
         Assert.assertNull(property1.defaultValue);
-        Assert.assertEquals(property1.baseType, "long?");
+        Assert.assertEquals(property1.baseType, "long");
         Assert.assertTrue(property1.hasMore);
         Assert.assertTrue(property1.required);
         Assert.assertTrue(property1.isPrimitiveType);

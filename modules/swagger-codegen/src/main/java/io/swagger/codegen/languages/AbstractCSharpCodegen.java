@@ -31,6 +31,8 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
 
     protected String sourceFolder = "src";
 
+    private HashSet<String> nullableTypes = new HashSet<String>();
+
     // TODO: Add option for test folder output location. Nice to allow e.g. ./test instead of ./src.
     //       This would require updating relative paths (e.g. path to main project file in test project file)
     protected String testFolder = sourceFolder;
@@ -89,18 +91,18 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                 Arrays.asList(
                         "String",
                         "string",
-                        "bool?",
-                        "double?",
-                        "decimal?",
-                        "int?",
-                        "long?",
-                        "float?",
+                        "bool",
+                        "double",
+                        "decimal",
+                        "int",
+                        "long",
+                        "float",
                         "byte[]",
                         "ICollection",
                         "Collection",
                         "List",
                         "Dictionary",
-                        "DateTime?",
+                        "DateTime",
                         "DateTimeOffset?",
                         "String",
                         "Boolean",
@@ -122,20 +124,30 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
         typeMapping.put("string", "string");
         typeMapping.put("binary", "byte[]");
         typeMapping.put("bytearray", "byte[]");
-        typeMapping.put("boolean", "bool?");
-        typeMapping.put("integer", "int?");
-        typeMapping.put("float", "float?");
-        typeMapping.put("long", "long?");
-        typeMapping.put("double", "double?");
-        typeMapping.put("number", "decimal?");
-        typeMapping.put("datetime", "DateTime?");
-        typeMapping.put("date", "DateTime?");
+        typeMapping.put("boolean", "bool");
+        typeMapping.put("integer", "int");
+        typeMapping.put("float", "float");
+        typeMapping.put("long", "long");
+        typeMapping.put("double", "double");
+        typeMapping.put("number", "decimal");
+        typeMapping.put("datetime", "DateTime");
+        typeMapping.put("date", "DateTime");
         typeMapping.put("file", "System.IO.Stream");
         typeMapping.put("array", "List");
         typeMapping.put("list", "List");
         typeMapping.put("map", "Dictionary");
         typeMapping.put("object", "Object");
         typeMapping.put("uuid", "Guid?");
+        
+        nullableTypes.addAll(
+                Arrays.asList(
+                        "bool",
+                        "int",
+                        "float",
+                        "long",
+                        "double",
+                        "DateTime")
+        );
     }
 
     public void setReturnICollection(boolean returnICollection) {
@@ -543,17 +555,23 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
 
     @Override
     public String getTypeDeclaration(Property p) {
+        String swaggerType = getSwaggerType(p);
         if (p instanceof ArrayProperty) {
             ArrayProperty ap = (ArrayProperty) p;
             Property inner = ap.getItems();
-            return getSwaggerType(p) + "<" + getTypeDeclaration(inner) + ">";
+            return swaggerType + "<" + getTypeDeclaration(inner) + ">";
         } else if (p instanceof MapProperty) {
             MapProperty mp = (MapProperty) p;
             Property inner = mp.getAdditionalProperties();
-
-            return getSwaggerType(p) + "<string, " + getTypeDeclaration(inner) + ">";
+            return swaggerType + "<string, " + getTypeDeclaration(inner) + ">";
+        } else if (!p.getRequired() && nullableTypes.contains(swaggerType)) {
+            return getNullableTypeFor(swaggerType);
         }
         return super.getTypeDeclaration(p);
+    }
+
+    private String getNullableTypeFor(String swaggerType) {
+        return swaggerType + "?";
     }
 
     @Override
