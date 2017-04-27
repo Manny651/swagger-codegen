@@ -559,10 +559,12 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
         if (p instanceof ArrayProperty) {
             ArrayProperty ap = (ArrayProperty) p;
             Property inner = ap.getItems();
+            inner.setRequired(true);
             return swaggerType + "<" + getTypeDeclaration(inner) + ">";
         } else if (p instanceof MapProperty) {
             MapProperty mp = (MapProperty) p;
             Property inner = mp.getAdditionalProperties();
+            inner.setRequired(true);
             return swaggerType + "<string, " + getTypeDeclaration(inner) + ">";
         } else if (!p.getRequired() && nullableTypes.contains(swaggerType)) {
             return getNullableTypeFor(swaggerType);
