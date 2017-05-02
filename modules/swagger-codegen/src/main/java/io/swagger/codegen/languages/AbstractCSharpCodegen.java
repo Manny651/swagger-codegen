@@ -146,6 +146,7 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
                         "float",
                         "long",
                         "double",
+                        "decimal",
                         "DateTime")
         );
     }
