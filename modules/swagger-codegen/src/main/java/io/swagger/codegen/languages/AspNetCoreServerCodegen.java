@@ -1,14 +1,14 @@
 package io.swagger.codegen.languages;
 
-import io.swagger.codegen.CodegenConstants;
-import io.swagger.codegen.CodegenOperation;
-import io.swagger.codegen.CodegenType;
-import io.swagger.codegen.SupportingFile;
+import io.swagger.codegen.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.List;
+import java.util.ListIterator;
 
 import static java.util.UUID.randomUUID;
 
@@ -167,5 +167,23 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
         // Converts, for example, PUT to HttpPut for controller attributes
         operation.httpMethod = "Http" + operation.httpMethod.substring(0, 1) + operation.httpMethod.substring(1).toLowerCase();
+    }
+    
+    @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        super.postProcessOperations(objs);
+        Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
+        if (operations != null) {
+            List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
+            for (CodegenOperation operation : ops) {
+                for (CodegenParameter param : operation.allParams) {
+                    if (param.isFile) {
+                        param.dataType = "Microsoft.AspNetCore.Http.IFormFile";
+                    }
+                }
+            }
+        }
+
+        return objs;
     }
 }
