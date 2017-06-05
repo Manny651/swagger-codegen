@@ -667,6 +667,16 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
     }
 
     @Override
+    public String toEnumValue(String value, String datatype) {
+        if ("int?".equalsIgnoreCase(datatype) || "long?".equalsIgnoreCase(datatype) ||
+            "int".equalsIgnoreCase(datatype) || "long".equalsIgnoreCase(datatype)) {
+            return value;
+        } else {
+            return "\"" + escapeText(value) + "\"";
+        }
+    }
+
+    @Override
     public String toEnumVarName(String name, String datatype) {
         if (name.length() == 0) {
             return "Empty";
