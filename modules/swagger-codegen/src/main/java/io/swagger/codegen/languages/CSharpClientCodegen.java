@@ -536,16 +536,6 @@ public class CSharpClientCodegen extends AbstractCSharpCodegen {
     }
 
     @Override
-    public String toEnumValue(String value, String datatype) {
-        if ("int?".equalsIgnoreCase(datatype) || "long?".equalsIgnoreCase(datatype) ||
-            "double?".equalsIgnoreCase(datatype) || "float?".equalsIgnoreCase(datatype)) {
-            return value;
-        } else {
-            return "\"" + escapeText(value) + "\"";
-        }
-    }
-
-    @Override
     public String toEnumVarName(String value, String datatype) {
         if (value.length() == 0) {
             return "Empty";
