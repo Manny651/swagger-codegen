@@ -354,12 +354,12 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
 
     @Override
     public String apiFileFolder() {
-        return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + apiPackage();
+        return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + apiPackage().replace('.', '/');
     }
 
     @Override
     public String modelFileFolder() {
-        return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + modelPackage();
+        return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + modelPackage().replace('.', '/');
     }
 
     @Override
