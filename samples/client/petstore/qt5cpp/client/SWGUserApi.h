@@ -33,6 +33,7 @@ public:
 
     QString host;
     QString basePath;
+    QMap<QString, QString> defaultHeaders;
 
     void createUser(SWGUser body);
     void createUsersWithArrayInput(QList<SWGUser*>* body);
@@ -63,6 +64,16 @@ signals:
     void logoutUserSignal();
     void updateUserSignal();
     
+    void createUserSignalE(QNetworkReply::NetworkError error_type, QString& error_str);
+    void createUsersWithArrayInputSignalE(QNetworkReply::NetworkError error_type, QString& error_str);
+    void createUsersWithListInputSignalE(QNetworkReply::NetworkError error_type, QString& error_str);
+    void deleteUserSignalE(QNetworkReply::NetworkError error_type, QString& error_str);
+    void getUserByNameSignalE(SWGUser* summary, QNetworkReply::NetworkError error_type, QString& error_str);
+    void loginUserSignalE(QString* summary, QNetworkReply::NetworkError error_type, QString& error_str);
+    void logoutUserSignalE(QNetworkReply::NetworkError error_type, QString& error_str);
+    void updateUserSignalE(QNetworkReply::NetworkError error_type, QString& error_str);
+    
 };
+
 }
 #endif

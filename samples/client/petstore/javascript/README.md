@@ -23,6 +23,30 @@ Then install it via:
 npm install swagger_petstore --save
 ```
 
+##### Local development
+
+To use the library locally without publishing to a remote npm registry, first install the dependencies by changing 
+into the directory containing `package.json` (and this README). Let's call this `JAVASCRIPT_CLIENT_DIR`. Then run:
+
+```shell
+npm install
+```
+
+Next, [link](https://docs.npmjs.com/cli/link) it globally in npm with the following, also from `JAVASCRIPT_CLIENT_DIR`:
+
+```shell
+npm link
+```
+
+Finally, switch to the directory you want to use your swagger_petstore from, and run:
+
+```shell
+npm link /path/to/<JAVASCRIPT_CLIENT_DIR>
+```
+
+You should now be able to `require('swagger_petstore')` in javascript files from the directory you ran the last 
+command above from.
+
 #### git
 #
 If the library is hosted at a git repository, e.g.
@@ -37,13 +61,32 @@ then install it via:
 
 The library also works in the browser environment via npm and [browserify](http://browserify.org/). After following
 the above steps with Node.js and installing browserify with `npm install -g browserify`,
-perform the following (assuming *main.js* is your entry file):
+perform the following (assuming *main.js* is your entry file, that's to say your javascript file where you actually 
+use this library):
 
 ```shell
 browserify main.js > bundle.js
 ```
 
 Then include *bundle.js* in the HTML pages.
+
+### Webpack Configuration
+
+Using Webpack you may encounter the following error: "Module not found: Error:
+Cannot resolve module", most certainly you should disable AMD loader. Add/merge
+the following section to your webpack config:
+
+```javascript
+module: {
+  rules: [
+    {
+      parser: {
+        amd: false
+      }
+    }
+  ]
+}
+```
 
 ## Getting Started
 
@@ -54,8 +97,9 @@ var SwaggerPetstore = require('swagger_petstore');
 
 var api = new SwaggerPetstore.FakeApi()
 
-var body = new SwaggerPetstore.Client(); // {Client} client model
-
+var opts = { 
+  'body': new SwaggerPetstore.OuterBoolean() // {OuterBoolean} Input boolean as post body
+};
 
 var callback = function(error, data, response) {
   if (error) {
@@ -64,7 +108,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.testClientModel(body, callback);
+api.fakeOuterBooleanSerialize(opts, callback);
 
 ```
 
@@ -74,6 +118,10 @@ All URIs are relative to *http://petstore.swagger.io:80/v2*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*SwaggerPetstore.FakeApi* | [**fakeOuterBooleanSerialize**](docs/FakeApi.md#fakeOuterBooleanSerialize) | **POST** /fake/outer/boolean | 
+*SwaggerPetstore.FakeApi* | [**fakeOuterCompositeSerialize**](docs/FakeApi.md#fakeOuterCompositeSerialize) | **POST** /fake/outer/composite | 
+*SwaggerPetstore.FakeApi* | [**fakeOuterNumberSerialize**](docs/FakeApi.md#fakeOuterNumberSerialize) | **POST** /fake/outer/number | 
+*SwaggerPetstore.FakeApi* | [**fakeOuterStringSerialize**](docs/FakeApi.md#fakeOuterStringSerialize) | **POST** /fake/outer/string | 
 *SwaggerPetstore.FakeApi* | [**testClientModel**](docs/FakeApi.md#testClientModel) | **PATCH** /fake | To test \&quot;client\&quot; model
 *SwaggerPetstore.FakeApi* | [**testEndpointParameters**](docs/FakeApi.md#testEndpointParameters) | **POST** /fake | Fake endpoint for testing various parameters 假端點 偽のエンドポイント 가짜 엔드 포인트 
 *SwaggerPetstore.FakeApi* | [**testEnumParameters**](docs/FakeApi.md#testEnumParameters) | **GET** /fake | To test enum parameters
@@ -109,11 +157,9 @@ Class | Method | HTTP request | Description
  - [SwaggerPetstore.ArrayOfNumberOnly](docs/ArrayOfNumberOnly.md)
  - [SwaggerPetstore.ArrayTest](docs/ArrayTest.md)
  - [SwaggerPetstore.Capitalization](docs/Capitalization.md)
- - [SwaggerPetstore.Cat](docs/Cat.md)
  - [SwaggerPetstore.Category](docs/Category.md)
  - [SwaggerPetstore.ClassModel](docs/ClassModel.md)
  - [SwaggerPetstore.Client](docs/Client.md)
- - [SwaggerPetstore.Dog](docs/Dog.md)
  - [SwaggerPetstore.EnumArrays](docs/EnumArrays.md)
  - [SwaggerPetstore.EnumClass](docs/EnumClass.md)
  - [SwaggerPetstore.EnumTest](docs/EnumTest.md)
@@ -127,12 +173,18 @@ Class | Method | HTTP request | Description
  - [SwaggerPetstore.Name](docs/Name.md)
  - [SwaggerPetstore.NumberOnly](docs/NumberOnly.md)
  - [SwaggerPetstore.Order](docs/Order.md)
+ - [SwaggerPetstore.OuterBoolean](docs/OuterBoolean.md)
+ - [SwaggerPetstore.OuterComposite](docs/OuterComposite.md)
  - [SwaggerPetstore.OuterEnum](docs/OuterEnum.md)
+ - [SwaggerPetstore.OuterNumber](docs/OuterNumber.md)
+ - [SwaggerPetstore.OuterString](docs/OuterString.md)
  - [SwaggerPetstore.Pet](docs/Pet.md)
  - [SwaggerPetstore.ReadOnlyFirst](docs/ReadOnlyFirst.md)
  - [SwaggerPetstore.SpecialModelName](docs/SpecialModelName.md)
  - [SwaggerPetstore.Tag](docs/Tag.md)
  - [SwaggerPetstore.User](docs/User.md)
+ - [SwaggerPetstore.Cat](docs/Cat.md)
+ - [SwaggerPetstore.Dog](docs/Dog.md)
 
 
 ## Documentation for Authorization
