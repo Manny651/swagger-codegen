@@ -39,7 +39,7 @@ public class CodegenProperty implements Cloneable {
     public boolean hasMore, required, secondaryParam;
     public boolean hasMoreNonReadOnly; // for model constructor, true if next properyt is not readonly
     public boolean isPrimitiveType, isContainer, isNotContainer;
-    public boolean isString, isInteger, isLong, isFloat, isDouble, isByteArray, isBinary, isFile, isBoolean, isDate, isDateTime;
+    public boolean isString, isNumeric, isInteger, isLong, isNumber, isFloat, isDouble, isByteArray, isBinary, isFile, isBoolean, isDate, isDateTime, isUuid;
     public boolean isListContainer, isMapContainer;
     public boolean isEnum;
     public boolean isReadOnly = false;
@@ -60,6 +60,7 @@ public class CodegenProperty implements Cloneable {
     public String xmlPrefix;
     public String xmlName;
     public String xmlNamespace;
+    public boolean isXmlWrapped = false;
 
 
     @Override
@@ -114,8 +115,10 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((vendorExtensions == null) ? 0 : vendorExtensions.hashCode());
         result = prime * result + ((hasValidation  ? 13:31));
         result = prime * result + ((isString  ? 13:31));
+        result = prime * result + ((isNumeric ? 13:31));
         result = prime * result + ((isInteger ? 13:31));
         result = prime * result + ((isLong  ?13:31));
+        result = prime * result + ((isNumber ? 13:31));
         result = prime * result + ((isFloat ? 13:31));
         result = prime * result + ((isDouble  ? 13:31));
         result = prime * result + ((isByteArray  ? 13:31));
@@ -124,6 +127,7 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((isBoolean  ? 13:31));
         result = prime * result + ((isDate  ? 13:31));
         result = prime * result + ((isDateTime ? 13:31));
+        result = prime * result + ((isUuid ? 13:31));
         result = prime * result + ((isMapContainer ? 13:31));
         result = prime * result + ((isListContainer  ? 13:31));
         result = prime * result + Objects.hashCode(isInherited);
@@ -135,6 +139,7 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((xmlPrefix == null) ? 0 : xmlPrefix.hashCode());
         result = prime * result + ((xmlName == null) ? 0 : xmlName.hashCode());
         result = prime * result + ((xmlNamespace == null) ? 0 : xmlNamespace.hashCode());
+        result = prime * result + ((isXmlWrapped  ? 13:31));
         return result;
     }
 
@@ -259,10 +264,16 @@ public class CodegenProperty implements Cloneable {
             return false;
         }
 
+        if (this.isNumeric != other.isNumeric) {
+            return false;
+        }
         if (this.isInteger != other.isInteger) {
             return false;
         }
         if (this.isLong != other.isLong) {
+            return false;
+        }
+        if (this.isNumber != other.isNumber) {
             return false;
         }
         if (this.isFloat != other.isFloat) {
@@ -281,6 +292,9 @@ public class CodegenProperty implements Cloneable {
             return false;
         }
         if (this.isDateTime != other.isDateTime) {
+            return false;
+        }
+        if (this.isUuid != other.isUuid) {
             return false;
         }
         if (this.isBinary != other.isBinary) {
@@ -320,6 +334,9 @@ public class CodegenProperty implements Cloneable {
             return false;
         }
         if (!Objects.equals(this.xmlNamespace, other.xmlNamespace)) {
+            return false;
+        }
+        if (!Objects.equals(this.isXmlWrapped, other.isXmlWrapped)) {
             return false;
         }
         return true;
