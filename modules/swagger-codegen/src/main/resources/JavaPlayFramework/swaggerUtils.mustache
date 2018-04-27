@@ -9,65 +9,76 @@ import java.lang.annotation.Target;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+{{#useBeanValidation}}
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+{{/useBeanValidation}}
+
 public class SwaggerUtils {
 
-{{#handleExceptions}}
+{{#wrapCalls}}
     @With(ApiCall.class)
     @Target({ ElementType.TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     public @interface ApiAction {
     }
-{{/handleExceptions}}
+{{/wrapCalls}}
 
-    public static List<String> parametersToList(String collectionFormat, String name, Object value){
+{{#useBeanValidation}}
+    public static <T> void validate(T obj) {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(obj);
+        if (constraintViolations.size() > 0) {
+            StringBuilder errors = new StringBuilder();
+            for (ConstraintViolation<T> contraintes : constraintViolations) {
+                errors.append(String.format("%s.%s %s\n",
+                contraintes.getRootBeanClass().getSimpleName(),
+                contraintes.getPropertyPath(),
+                contraintes.getMessage()));
+            }
+            throw new RuntimeException("Bean validation : " + errors);
+        }
+    }
+{{/useBeanValidation}}
+
+    public static List<String> parametersToList(String collectionFormat, String[] values){
         List<String> params = new ArrayList<>();
 
-        // preconditions
-        if (name == null || name.isEmpty() || value == null) return params;
+        if (values == null) {
+            return params;
+        }
 
-        Collection valueCollection = null;
-        if (value instanceof Collection) {
-            valueCollection = (Collection) value;
+        if (values.length >= 1 && collectionFormat.equals("multi")) {
+            params.addAll(Arrays.asList(values));
         } else {
-            params.add(parameterToString(value));
-            return params;
-        }
+            collectionFormat = (collectionFormat == null || collectionFormat.isEmpty() ? "csv" : collectionFormat); // default: csv
 
-        if (valueCollection.isEmpty()){
-            return params;
-        }
+            String delimiter = ",";
 
-        // get the collection format
-        collectionFormat = (collectionFormat == null || collectionFormat.isEmpty() ? "csv" : collectionFormat); // default: csv
-
-        // create the params based on the collection format
-        if (collectionFormat.equals("multi")) {
-            for (Object item : valueCollection) {
-                params.add(parameterToString(item));
+            switch(collectionFormat) {
+                case "csv": {
+                    delimiter = ",";
+                    break;
+                }
+                case "ssv": {
+                    delimiter = " ";
+                    break;
+                }
+                case "tsv": {
+                    delimiter = "\t";
+                    break;
+                }
+                case "pipes": {
+                    delimiter = "|";
+                    break;
+                }
             }
 
-            return params;
+            params = Arrays.asList(values[0].split(delimiter));
         }
-
-        String delimiter = ",";
-
-        if (collectionFormat.equals("csv")) {
-            delimiter = ",";
-        } else if (collectionFormat.equals("ssv")) {
-            delimiter = " ";
-        } else if (collectionFormat.equals("tsv")) {
-            delimiter = "\t";
-        } else if (collectionFormat.equals("pipes")) {
-            delimiter = "|";
-        }
-
-        StringBuilder sb = new StringBuilder() ;
-        for (Object item : valueCollection) {
-            sb.append(delimiter);
-            sb.append(parameterToString(item));
-        }
-
-        params.add(sb.substring(1));
 
         return params;
     }
