@@ -9,82 +9,98 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.XPath;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.Swagger.Model;
-using Swashbuckle.SwaggerGen.Annotations;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace IO.Swagger
 {
+    /// <summary>
+    /// Startup
+    /// </summary>
     public class Startup
     {
         private readonly IHostingEnvironment _hostingEnv;
 
-        public IConfigurationRoot Configuration { get; }
+        private IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="env"></param>
+        /// <param name="configuration"></param>
+        public Startup(IHostingEnvironment env, IConfiguration configuration)
         {
             _hostingEnv = env;
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
-  
-    
-        // This method gets called by the runtime. Use this method to add services to the container.
+
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc()
-                .AddJsonOptions(
-                    opts => { opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); });
-            
-            services.AddSwaggerGen();
-            
-            services.ConfigureSwaggerGen(options =>
-            {
-                options.SingleApiVersion(new Info
+            services
+                .AddMvc()
+                .AddJsonOptions(opts =>
                 {
-                    Version = "v1",
-                    Title = "IO.Swagger",
-                    Description = "IO.Swagger (ASP.NET Core 1.0)"
+                    opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    opts.SerializerSettings.Converters.Add(new StringEnumConverter {
+                        CamelCaseText = true
+                    });
                 });
 
-                options.DescribeAllEnumsAsStrings();
-
-                var comments = new XPathDocument($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{_hostingEnv.ApplicationName}.xml");
-                options.OperationFilter<XmlCommentsOperationFilter>(comments);
-                options.ModelFilter<XmlCommentsModelFilter>(comments);
-            });
-            
+            services
+                .AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info
+                    {
+                        Version = "v1",
+                        Title = "IO.Swagger",
+                        Description = "IO.Swagger (ASP.NET Core 2.0)"
+                    });
+                    c.CustomSchemaIds(type => type.FriendlyId(true));
+                    c.DescribeAllEnumsAsStrings();
+                    c.IncludeXmlComments($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{_hostingEnv.ApplicationName}.xml");
+                });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="loggerFactory"></param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            app
+                .UseMvc()
+                .UseDefaultFiles()
+                .UseStaticFiles()
+                .UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "IO.Swagger");
+                });
 
-            app.UseMvc();
-            
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            app.UseSwagger();
-            app.UseSwaggerUi();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                //TODO: Enable production exception handling (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/error-handling)
+                // app.UseExceptionHandler("/Home/Error");
+            }
         }
     }
 }
