@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using IO.Swagger.Attributes;
 using IO.Swagger.Models;
 
@@ -98,7 +99,7 @@ namespace IO.Swagger.Controllers
         [Route("/v2/user/{username}")]
         [ValidateModelState]
         [SwaggerOperation("DeleteUser")]
-        public virtual IActionResult DeleteUser([FromRoute]string username)
+        public virtual IActionResult DeleteUser([FromRoute][Required]string username)
         { 
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400);
@@ -114,7 +115,7 @@ namespace IO.Swagger.Controllers
         /// Get user by user name
         /// </summary>
         
-        /// <param name="username">The name that needs to be fetched. Use user1 for testing. </param>
+        /// <param name="username">The name that needs to be fetched. Use user1 for testing.</param>
         /// <response code="200">successful operation</response>
         /// <response code="400">Invalid username supplied</response>
         /// <response code="404">User not found</response>
@@ -122,10 +123,8 @@ namespace IO.Swagger.Controllers
         [Route("/v2/user/{username}")]
         [ValidateModelState]
         [SwaggerOperation("GetUserByName")]
-        [SwaggerResponse(200, typeof(User), "successful operation")]
-        [SwaggerResponse(400, typeof(User), "Invalid username supplied")]
-        [SwaggerResponse(404, typeof(User), "User not found")]
-        public virtual IActionResult GetUserByName([FromRoute]string username)
+        [SwaggerResponse(statusCode: 200, type: typeof(User), description: "successful operation")]
+        public virtual IActionResult GetUserByName([FromRoute][Required]string username)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(User));
@@ -137,6 +136,8 @@ namespace IO.Swagger.Controllers
             // return StatusCode(404);
 
             string exampleJson = null;
+            exampleJson = "<User>\n  <id>123456789</id>\n  <username>aeiou</username>\n  <firstName>aeiou</firstName>\n  <lastName>aeiou</lastName>\n  <email>aeiou</email>\n  <password>aeiou</password>\n  <phone>aeiou</phone>\n  <userStatus>123</userStatus>\n</User>";
+            exampleJson = "{\r\n  \"firstName\" : \"firstName\",\r\n  \"lastName\" : \"lastName\",\r\n  \"password\" : \"password\",\r\n  \"userStatus\" : 6,\r\n  \"phone\" : \"phone\",\r\n  \"id\" : 0,\r\n  \"email\" : \"email\",\r\n  \"username\" : \"username\"\r\n}";
             
             var example = exampleJson != null
             ? JsonConvert.DeserializeObject<User>(exampleJson)
@@ -157,9 +158,8 @@ namespace IO.Swagger.Controllers
         [Route("/v2/user/login")]
         [ValidateModelState]
         [SwaggerOperation("LoginUser")]
-        [SwaggerResponse(200, typeof(string), "successful operation")]
-        [SwaggerResponse(400, typeof(string), "Invalid username/password supplied")]
-        public virtual IActionResult LoginUser([FromQuery]string username, [FromQuery]string password)
+        [SwaggerResponse(statusCode: 200, type: typeof(string), description: "successful operation")]
+        public virtual IActionResult LoginUser([FromQuery][Required()]string username, [FromQuery][Required()]string password)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(string));
@@ -168,6 +168,8 @@ namespace IO.Swagger.Controllers
             // return StatusCode(400);
 
             string exampleJson = null;
+            exampleJson = "aeiou";
+            exampleJson = "\"\"";
             
             var example = exampleJson != null
             ? JsonConvert.DeserializeObject<string>(exampleJson)
@@ -206,7 +208,7 @@ namespace IO.Swagger.Controllers
         [Route("/v2/user/{username}")]
         [ValidateModelState]
         [SwaggerOperation("UpdateUser")]
-        public virtual IActionResult UpdateUser([FromRoute]string username, [FromBody]User body)
+        public virtual IActionResult UpdateUser([FromRoute][Required]string username, [FromBody]User body)
         { 
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400);
