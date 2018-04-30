@@ -930,7 +930,11 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
         enumName = enumName.replaceFirst("^_", "");
         enumName = enumName.replaceFirst("_$", "");
 
-        enumName = camelize(enumName) + "Enum";
+        if (isReservedWord(enumName)) {
+            enumName = camelize(enumName) + "Enum";
+        } else {
+            enumName = camelize(enumName);
+        }
 
         if (enumName.matches("\\d.*")) { // starts with number
             return "_" + enumName;
