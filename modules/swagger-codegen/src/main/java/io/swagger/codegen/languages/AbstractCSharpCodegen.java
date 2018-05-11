@@ -73,10 +73,6 @@ public abstract class AbstractCSharpCodegen extends DefaultCodegen implements Co
         // NOTE: C# uses camel cased reserved words, while models are title cased. We don't want lowercase comparisons.
         reservedWords.addAll(
                 Arrays.asList(
-                        // set "client" as a reserved word to avoid conflicts with IO.Swagger.Client
-                        // this is a workaround and can be removed if c# api client is updated to use
-                        // fully qualified name
-                        "Client", "client", "parameter",
                         // local variable names in API methods (endpoints)
                         "localVarPath", "localVarPathParams", "localVarQueryParams", "localVarHeaderParams",
                         "localVarFormParams", "localVarFileParams", "localVarStatusCode", "localVarResponse",
