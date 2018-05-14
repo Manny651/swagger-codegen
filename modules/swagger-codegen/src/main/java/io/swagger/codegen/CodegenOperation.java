@@ -17,7 +17,7 @@ public class CodegenOperation {
             isListContainer, isMultipart, hasMore = true,
             isResponseBinary = false, isResponseFile = false, hasReference = false,
             isRestfulIndex, isRestfulShow, isRestfulCreate, isRestfulUpdate, isRestfulDestroy,
-            isRestful, isDeprecated;
+            isRestful, isDeprecated, isGet, isPut, isPost, isDelete;
     public String path, operationId, returnType, httpMethod, returnBaseType,
             returnContainer, summary, unescapedNotes, notes, baseName, defaultResponse, discriminator;
     public List<Map<String, String>> consumes, produces, prioritizedContentTypes;
@@ -51,7 +51,7 @@ public class CodegenOperation {
     private static boolean nonempty(List<?> params) {
         return params != null && params.size() > 0;
     }
-    
+
     /**
      * Check if there's at least one body parameter
      *
@@ -107,12 +107,48 @@ public class CodegenOperation {
     }
 
     /**
+     * Check if the http method is get
+     *
+     * @return true if the http method is get
+     */
+    public boolean isGet() {
+        return "GET".equalsIgnoreCase(httpMethod);
+    }
+
+    /**
+     * Check if the http method is put
+     *
+     * @return true if the http method is put
+     */
+    public boolean isPut() {
+        return "PUT".equalsIgnoreCase(httpMethod);
+    }
+
+    /**
+     * Check if the http method is post
+     *
+     * @return true if the http method is post
+     */
+    public boolean isPost() {
+        return "POST".equalsIgnoreCase(httpMethod);
+    }
+
+    /**
+     * Check if the http method is delete
+     *
+     * @return true if the http method is delete
+     */
+    public boolean isDelete() {
+        return "DELETE".equalsIgnoreCase(httpMethod);
+    }
+
+    /**
      * Check if act as Restful index method
      *
      * @return true if act as Restful index method, false otherwise
      */
     public boolean isRestfulIndex() {
-        return "GET".equalsIgnoreCase(httpMethod) && "".equals(pathWithoutBaseName());
+        return isGet() && "".equals(pathWithoutBaseName());
     }
 
     /**
@@ -121,7 +157,7 @@ public class CodegenOperation {
      * @return true if act as Restful show method, false otherwise
      */
     public boolean isRestfulShow() {
-        return "GET".equalsIgnoreCase(httpMethod) && isMemberPath();
+        return isGet() && isMemberPath();
     }
 
     /**
