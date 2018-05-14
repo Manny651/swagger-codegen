@@ -269,7 +269,7 @@ public class DefaultCodegen {
     }
 
     /**
-     * Returns the common prefix of variables for enum naming if 
+     * Returns the common prefix of variables for enum naming if
      * two or more variables are present
      *
      * @param vars List of variable names
@@ -2316,6 +2316,11 @@ public class DefaultCodegen {
         op.isRestfulUpdate = op.isRestfulUpdate();
         op.isRestfulDestroy = op.isRestfulDestroy();
         op.isRestful = op.isRestful();
+
+        op.isGet = op.isGet();
+        op.isPut = op.isPut();
+        op.isPost = op.isPost();
+        op.isDelete = op.isDelete();
 
         return op;
     }
